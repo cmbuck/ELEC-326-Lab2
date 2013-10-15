@@ -1,5 +1,5 @@
 #include "cons.h"
-
+#define DEBUG(a)	//printf("%d\r\n", a);
 unsigned int findPhrase(unsigned, unsigned); 
 
 // Global data structure used in kvStore.c
@@ -28,8 +28,48 @@ void compressFile(FILE *input, BIT_FILE *output)
    *                                                                    *
    *********************************************************************/
 
+	//initialize the dictionary to UNUSED
+	int i,j,currentCode;
+	struct dictionary_entry temp = {UNUSED, 0, 0};
+	for (i = FIRST_CODE; i < TABLE_SIZE; i++)
+		//dict[i].code = UNUSED;
+		dict[i] = temp;
+	
+	unsigned int prefix, next, index;
+	
+	i = j = 0;
+	currentCode = FIRST_CODE;
+	prefix = getc(input);	DEBUG(i++);
+	next = getc(input);		DEBUG(i++);
+	//TODO: Handle case of empty file
+	while (next != -1)
+	{
+		index = findPhrase(prefix, next);
+		if (dict[index].code == UNUSED)
+		{
+			//add to dictionary
+			if (currentCode <= MAX_CODE)
+			{
+				//dict[index] = {currentCode++, prefix, next};
+				dict[index].code = currentCode++;
+				dict[index].prefixcode = prefix;
+				dict[index].character = next;
+			}
+			//output prefix
+			outputBits(output, prefix, BITS);
+			prefix = next;
+			next = getc(input);		DEBUG(i++);
+		}
+		else
+		{
+			prefix = dict[index].code;
+			next = getc(input);		DEBUG(i++);
+			//continue;
+		}
+	}
+	//next == END_OF_STREAM; output remaining prefix
+	outputBits(output, prefix, BITS);
+	outputBits(output, END_OF_STREAM, BITS);
+	
 }
-
-
-
 
