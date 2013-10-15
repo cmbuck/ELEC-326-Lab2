@@ -33,7 +33,7 @@ struct dictionary_entry {
 #define TABLE_SIZE 19001    /* Dictionary size: a prime larger than MAX_CODE */
 #define UNUSED -1      
 
-#define LINEAR 1            /* Chooses between simple and hash based dictionary. */
+#define LINEAR 0            /* Chooses between simple and hash based dictionary. */
                             /* Make LINEAR 0 to exercise your  hash function */
 
 

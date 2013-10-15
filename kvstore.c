@@ -7,7 +7,7 @@ unsigned hash(unsigned prefix, unsigned newchar){
   if (LINEAR)   
     return (0); 
   else
-    return (0);
+    return ((prefix * newchar) % TABLE_SIZE);
 }
   
 
