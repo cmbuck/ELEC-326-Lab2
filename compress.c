@@ -32,7 +32,6 @@ void compressFile(FILE *input, BIT_FILE *output)
 	int i,j,currentCode;
 	struct dictionary_entry temp = {UNUSED, 0, 0};
 	for (i = FIRST_CODE; i < TABLE_SIZE; i++)
-		//dict[i].code = UNUSED;
 		dict[i] = temp;
 	
 	unsigned int prefix, next, index;
@@ -40,8 +39,13 @@ void compressFile(FILE *input, BIT_FILE *output)
 	i = j = 0;
 	currentCode = FIRST_CODE;
 	prefix = getc(input);	DEBUG(i++);
+	//handle case of empty file
+	if (prefix == EOF)
+	{
+		outputBits(output, END_OF_STREAM, BITS);
+		return;
+	}
 	next = getc(input);		DEBUG(i++);
-	//TODO: Handle case of empty file
 	while (next != -1)
 	{
 		index = findPhrase(prefix, next);
@@ -50,7 +54,6 @@ void compressFile(FILE *input, BIT_FILE *output)
 			//add to dictionary
 			if (currentCode <= MAX_CODE)
 			{
-				//dict[index] = {currentCode++, prefix, next};
 				dict[index].code = currentCode++;
 				dict[index].prefixcode = prefix;
 				dict[index].character = next;
@@ -64,7 +67,6 @@ void compressFile(FILE *input, BIT_FILE *output)
 		{
 			prefix = dict[index].code;
 			next = getc(input);		DEBUG(i++);
-			//continue;
 		}
 	}
 	//next == END_OF_STREAM; output remaining prefix
